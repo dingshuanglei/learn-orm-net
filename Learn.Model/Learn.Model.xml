@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Learn.Model</name>
+    </assembly>
+    <members>
+        <member name="T:Learn.Model.Data.BaseEntity">
+            <summary>
+            BaseEntity
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.BaseEntity.Id">
+            <summary>
+            Id<para></para>
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.BaseEntity.Create_Uid">
+            <summary>
+            Create_Uid<para></para>
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.BaseEntity.Create_Date">
+            <summary>
+            Create_Date<para></para>
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.BaseEntity.Edit_Uid">
+            <summary>
+            edit_uid<para></para>
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.BaseEntity.Edit_Date">
+            <summary>
+            Edit_Date<para></para>
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.BaseEntity.Is_Delete">
+            <summary>
+            is_delete<para></para>
+            value: true or false<para></para>
+            default false 0<para></para>
+            </summary>
+        </member>
+        <member name="T:Learn.Model.Data.LearnStudent">
+            <summary>
+            LearnStudent
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.LearnStudent.User_Name">
+            <summary>
+            User_Name
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.LearnStudent.Password">
+            <summary>
+            Password
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.LearnStudent.Age">
+            <summary>
+            Age
+            </summary>
+        </member>
+        <member name="P:Learn.Model.Data.LearnStudent.Gender">
+            <summary>
+            Gender
+            </summary>
+        </member>
+    </members>
+</doc>

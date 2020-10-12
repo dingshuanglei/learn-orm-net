@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Learn.WebApi</name>
+    </assembly>
+    <members>
+        <member name="M:Learn.WebApi.Startup.ConfigureContainer(Autofac.ContainerBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="builder"></param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Person\learn-orm-net\Learn.WebApi\Learn.WebApi.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Learn.Common\Learn.Common.csproj" />
+    <ProjectReference Include="..\Learn.IRepository\Learn.IRepository.csproj" />
+    <ProjectReference Include="..\Learn.IService\Learn.IService.csproj" />
+    <ProjectReference Include="..\Learn.Model\Learn.Model.csproj" />
+    <ProjectReference Include="..\Learn.Repository\Learn.Repository.csproj" />
+    <ProjectReference Include="..\Learn.Service\Learn.Service.csproj" />
+  </ItemGroup>
+
+
+</Project>
