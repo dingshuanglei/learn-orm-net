@@ -47,25 +47,6 @@ namespace Learn.WebApi
                 var modelXmlPath = Path.Combine(basePath, "Learn.Model.xml");
                 c.IncludeXmlComments(modelXmlPath, true);
 
-                //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                //{
-                //    Description = "JWT授权(数据将在请求头中进行传输) 参数结构: \"Bearer {token}\"",
-                //    Name = "token",//jwt默认的参数名称
-                //    In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
-                //    Type = SecuritySchemeType.ApiKey
-                //});
-
-                //c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //{
-                //    {
-                //        new OpenApiSecurityScheme
-                //        {
-                //            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "ApiKey" }
-                //        },
-                //        new[] { "readAccess", "writeAccess" }
-                //    }
-                //});
-
                 // Add security definitions
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
@@ -91,7 +72,6 @@ namespace Learn.WebApi
 
             #endregion
 
-
             #region db init
 
             InitDbTable.InitTable();
@@ -103,11 +83,18 @@ namespace Learn.WebApi
 
 
         /// <summary>
-        /// 
+        /// autofac ioc
         /// </summary>
         /// <param name="builder"></param>
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            //使用单例模式
+            //builder.RegisterType<Test>().As<ITest>().SingleInstance().PropertiesAutowired();
+
+            //单接口多实现
+            //builder.RegisterType<TestOne>().Named<ITest>(nameof(TestOne));
+            //builder.RegisterType<TestTwo>().Named<ITest>(nameof(TestTwo));
+
             Assembly[] assembliesService = new Assembly[] { Assembly.Load("Learn.Service") };
             builder.RegisterAssemblyTypes(assembliesService).Where(type => !type.IsAbstract && typeof(IocService).IsAssignableFrom(type)).AsImplementedInterfaces().PropertiesAutowired();
 
@@ -137,6 +124,7 @@ namespace Learn.WebApi
 
             app.UseAuthorization();
 
+            //使用静态文件
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>

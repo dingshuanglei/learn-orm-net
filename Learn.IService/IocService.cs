@@ -20,6 +20,8 @@ namespace Learn.IService
 {
     /// <summary>
     /// IocService
+    /// prevent useless interface injection<para></para>
+    /// 防止多余的接口注入<para></para>
     /// </summary>
     public partial interface IocService
     {
