@@ -86,7 +86,7 @@ namespace Learn.Repository.Base
             string tableName = GetCurrentTableName();
             StringBuilder sbField = new StringBuilder();
             StringBuilder sbValue = new StringBuilder();
-            PropertyInfo[] properties = GetAllFields(true);
+            List<PropertyInfo> properties = GetExcludeKeyAllFields();
             foreach (var item in properties)
             {
                 sbField.AppendFormat("{0},", item.Name);
@@ -101,9 +101,8 @@ namespace Learn.Repository.Base
         /// <summary>
         /// get exclude key fields
         /// </summary>
-        /// <param name="isExcludeKey">isExcludeKey</param>
         /// <returns>return exclude key fields</returns>
-        private PropertyInfo[] GetAllFields(bool isExcludeKey = false)
+        private List<PropertyInfo> GetExcludeKeyAllFields()
         {
             PropertyInfo[] properties = typeof(T).GetProperties();
             // filter abstract virtual property
@@ -112,24 +111,20 @@ namespace Learn.Repository.Base
             {
                 throw new ArgumentNullException("value fields is null");
             }
-            if (isExcludeKey)
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            foreach (var item in properties)
             {
-                List<PropertyInfo> list = new List<PropertyInfo>();
-                foreach (var item in properties)
+                if (item.CustomAttributes.Any(c => c.AttributeType.Name == nameof(KeyAttribute)))
                 {
-                    if (item.CustomAttributes.Any(c => c.AttributeType.Name == nameof(KeyAttribute)))
-                    {
-                        continue;
-                    }
-                    list.Add(item);
+                    continue;
                 }
-                if (list == null || list.Count <= 0)
-                {
-                    throw new ArgumentNullException("value fields is null");
-                }
-                return list.ToArray();
+                list.Add(item);
             }
-            return properties;
+            if (list == null || list.Count <= 0)
+            {
+                throw new ArgumentNullException("value fields is null");
+            }
+            return list;
         }
 
         /// <summary>
