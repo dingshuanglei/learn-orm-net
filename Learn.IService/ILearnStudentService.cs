@@ -24,7 +24,7 @@ namespace Learn.IService
     /// </summary>
     public partial interface ILearnStudentService:IocService
     {
-        Learn_Student Add(Learn_Student learnStudent);
+        bool Add(Learn_Student learnStudent);
 
     }
 }

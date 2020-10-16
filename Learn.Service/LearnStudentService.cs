@@ -33,14 +33,13 @@ namespace Learn.Service
         }
 
 
-        public Learn_Student Add(Learn_Student learnStudent)
+        public bool Add(Learn_Student learnStudent)
         {
             if (learnStudent == null)
             {
-                return null;
+                return false;
             }
             return repository.Add(learnStudent);
         }
-
     }
 }

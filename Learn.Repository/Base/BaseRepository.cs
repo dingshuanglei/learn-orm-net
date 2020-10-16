@@ -40,11 +40,16 @@ namespace Learn.Repository.Base
 
         #region base method
 
-        public T Add(T entity)
+        /// <summary>
+        /// add entity
+        /// </summary>
+        /// <param name="entity">entity</param>
+        /// <returns>return true or false</returns>
+        public bool Add(T entity)
         {
             string sql = GetInsertSql(entity);
             context.Database.ExecuteSqlRaw(sql);
-            return entity;
+            return true;
         }
 
         #endregion

@@ -25,8 +25,7 @@ namespace Learn.WebApi.Controllers
         public AjaxResult Add(Learn_Student learnStudent)
         {
             AjaxResult ajaxResult = new AjaxResult();
-            service.Add(learnStudent);
-            ajaxResult.Result = true;
+            ajaxResult.Result = service.Add(learnStudent);
             return ajaxResult;
         }
 

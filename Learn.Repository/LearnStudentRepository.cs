@@ -27,7 +27,7 @@ namespace Learn.Repository
     /// </summary>
     public partial class LearnStudentRepository: ILearnStudentRepository
     {
-        public Learn_Student Add(Learn_Student learnStudent)
+        public bool Add(Learn_Student learnStudent)
         {
             using (MySqlDbContext mySqlDbContext=new MySqlDbContext())
             {

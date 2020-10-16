@@ -24,7 +24,7 @@ namespace Learn.IRepository
     /// </summary>
     public partial interface ILearnStudentRepository
     {
-        Learn_Student Add(Learn_Student learnStudent);
+        bool Add(Learn_Student learnStudent);
 
     }
 }
