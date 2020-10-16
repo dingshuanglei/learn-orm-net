@@ -55,22 +55,14 @@ namespace Learn.Repository.Base
         /// <summary>
         /// get current-table-name
         /// </summary>
-        /// <param name="tableName">tableName</param>
         /// <returns>return table-name</returns>
-        private string GetCurrentTableName(string tableName = null)
+        private string GetCurrentTableName()
         {
             string currentTableName = string.Empty;
-            if (tableName.IsNullOrEmpty())
+            var t = typeof(T);
+            if (t != null && !t.Name.IsNullOrEmpty())
             {
-                var t = typeof(T);
-                if (t != null && !t.Name.IsNullOrEmpty())
-                {
-                    currentTableName = t.Name;
-                }
-            }
-            else
-            {
-                currentTableName = tableName;
+                currentTableName = t.Name;
             }
             if (currentTableName.IsNullOrEmpty())
             {
@@ -86,22 +78,19 @@ namespace Learn.Repository.Base
         /// <returns>return insert sql</returns>
         private string GetInsertSql(T entity)
         {
-            string tableName = GetCurrentTableName(entity.GetType().Name);
-            string key = string.Format("insert_{0}", tableName);
-            StringBuilder sbSql = new StringBuilder();
+            string tableName = GetCurrentTableName();
+            StringBuilder sbField = new StringBuilder();
             StringBuilder sbValue = new StringBuilder();
-            sbSql.AppendFormat("INSERT INTO {0} (", tableName);
             PropertyInfo[] properties = GetAllFields(true);
             foreach (var item in properties)
             {
-                sbSql.AppendFormat("{0},", item.Name);
+                sbField.AppendFormat("{0},", item.Name);
                 sbValue.AppendFormat("{0},", GetValue(item, entity));
             }
-            sbSql.Remove(sbSql.Length - 1, 1);
+            sbField.Remove(sbField.Length - 1, 1);
             sbValue.Remove(sbValue.Length - 1, 1);
             //todo ;SELECT @@identity return identity
-            sbSql.AppendFormat(") VALUES ({0})", sbValue.ToString());
-            return sbSql.ToString();
+            return string.Format("INSERT INTO {0} ({1}) VALUES ({2})", tableName, sbField, sbValue);
         }
 
         /// <summary>
