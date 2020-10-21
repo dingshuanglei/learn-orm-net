@@ -18,6 +18,7 @@
 using Learn.Model.Data;
 using Learn.Repository.DbContexts;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -52,11 +53,24 @@ namespace Learn.Repository.Base
             return true;
         }
 
-        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool Update(T entity)
+        {
+            string sql = GetUpdateSql(entity);
+            MySqlParameter[] parameters = GetMySqlParameters(entity.GetType().GetProperties(), entity);
+            int row = context.Database.ExecuteSqlRaw(sql, parameters);
+            return row > 0 ? true : false;
+        }
 
+        #endregion
 
         #region private method
 
+        #region private table method
         /// <summary>
         /// get current-table-name
         /// </summary>
@@ -75,7 +89,9 @@ namespace Learn.Repository.Base
             }
             return currentTableName;
         }
+        #endregion
 
+        #region private build sql
         /// <summary>
         /// get insert sql
         /// </summary>
@@ -98,6 +114,33 @@ namespace Learn.Repository.Base
             return string.Format("INSERT INTO {0} ({1}) VALUES ({2})", tableName, sbField, sbValue);
         }
 
+        /// <summary>
+        /// get update sql
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private string GetUpdateSql(T entity)
+        {
+            string tableName = GetCurrentTableName();
+            StringBuilder stringBuilder = new StringBuilder();
+            List<PropertyInfo> properties = GetExcludeKeyAllFields();
+            foreach (var item in properties)
+            {
+                stringBuilder.AppendFormat("{0}=@{0},", item.Name);
+            }
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            stringBuilder.Append(" WHERE ");
+            List<PropertyInfo> propertyKeys = GetKey();
+            foreach (var propertyKey in propertyKeys)
+            {
+                stringBuilder.AppendFormat("{0}=@{0} AND ", propertyKey.Name);
+            }
+            stringBuilder.Remove(stringBuilder.Length - 4, 4);
+            return string.Format("UPDATE {0} SET {1}", tableName, stringBuilder);
+        }
+        #endregion
+
+        #region private fields
         /// <summary>
         /// get exclude key fields
         /// </summary>
@@ -128,17 +171,35 @@ namespace Learn.Repository.Base
         }
 
         /// <summary>
+        /// get key-atttribute
+        /// </summary>
+        /// <returns>return key-attribute</returns>
+        private List<PropertyInfo> GetKey()
+        {
+            List<PropertyInfo> list = new List<PropertyInfo>();
+            PropertyInfo[] properties = typeof(T).GetProperties();
+            foreach (var item in properties)
+            {
+                if (item.CustomAttributes.Any(c => c.AttributeType.Name == nameof(KeyAttribute)))
+                {
+                    list.Add(item);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
         /// get value
         /// </summary>
         /// <param name="property"></param>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private string GetValue(PropertyInfo property , T entity)
+        private string GetValue(PropertyInfo property, T entity)
         {
             var val = property.GetValue(entity);
             if (val == null)
             {
-              return "NULL";
+                return "NULL";
             }
             else
             {
@@ -154,7 +215,9 @@ namespace Learn.Repository.Base
                 return string.Format("{0}'{1}'", prefixN, val);
             }
         }
+        #endregion
 
+        #region private extend method
         /// <summary>
         /// get bool value
         /// mysql true or false convert 1 or 0
@@ -170,6 +233,38 @@ namespace Learn.Repository.Base
             }
             return 1;
         }
+        #endregion
+
+        #region private parameters
+        /// <summary>
+        /// get sql parameters
+        /// </summary>
+        /// <param name="properties">properties</param>
+        /// <param name="entity">entity</param>
+        /// <returns>return sql parameters</returns>
+        private MySqlParameter[] GetMySqlParameters(PropertyInfo[] properties, T entity)
+        {
+            List<MySqlParameter> list = new List<MySqlParameter>();
+            foreach (var propertie in properties)
+            {
+                object obj = propertie.GetValue(entity);
+                if (obj == null)
+                {
+                    list.Add(new MySqlParameter($"@{propertie.Name}", DBNull.Value));
+                }
+                else
+                {
+                    list.Add(new MySqlParameter($"@{propertie.Name}", propertie.GetValue(entity)));
+                }
+            }
+            if (list == null || list.Count <= 0)
+            {
+                throw new ArgumentNullException("get sql parameters failed");
+            }
+            return list.ToArray();
+        }
+        #endregion
+
         #endregion
     }
 }

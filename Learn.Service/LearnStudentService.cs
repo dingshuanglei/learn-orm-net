@@ -41,5 +41,14 @@ namespace Learn.Service
             }
             return repository.Add(learnStudent);
         }
+
+        public bool Update(Learn_Student learnStudent)
+        {
+            if (learnStudent == null)
+            {
+                return false;
+            }
+            return repository.Update(learnStudent);
+        }
     }
 }

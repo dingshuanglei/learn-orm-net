@@ -29,5 +29,13 @@ namespace Learn.WebApi.Controllers
             return ajaxResult;
         }
 
+        [HttpPost]
+        [Route(nameof(Update))]
+        public AjaxResult Update(Learn_Student learnStudent)
+        {
+            AjaxResult ajaxResult = new AjaxResult();
+            ajaxResult.Result = service.Update(learnStudent);
+            return ajaxResult;
+        }
     }
 }

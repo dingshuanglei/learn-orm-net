@@ -35,5 +35,14 @@ namespace Learn.Repository
                 return baseRepository.Add(learnStudent);
             }    
         }
+
+        public bool Update(Learn_Student learnStudent)
+        {
+            using (MySqlDbContext mySqlDbContext = new MySqlDbContext())
+            {
+                BaseRepository<Learn_Student> baseRepository = new BaseRepository<Learn_Student>(mySqlDbContext);
+                return baseRepository.Update(learnStudent);
+            }
+        }
     }
 }
