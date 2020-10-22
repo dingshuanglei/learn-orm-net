@@ -54,10 +54,10 @@ namespace Learn.Repository.Base
         }
 
         /// <summary>
-        /// 
+        /// udpate entity
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <param name="entity">entity</param>
+        /// <returns>return true or false</returns>
         public bool Update(T entity)
         {
             string sql = GetUpdateSql(entity);
