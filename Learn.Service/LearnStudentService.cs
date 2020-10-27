@@ -50,5 +50,14 @@ namespace Learn.Service
             }
             return repository.Update(learnStudent);
         }
+
+        public bool Delete(Learn_Student learnStudent)
+        {
+            if (learnStudent==null)
+            {
+                return false;
+            }
+            return repository.Delete(learnStudent);
+        }
     }
 }

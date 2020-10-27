@@ -66,6 +66,20 @@ namespace Learn.Repository.Base
             return row > 0 ? true : false;
         }
 
+        /// <summary>
+        /// delete entity
+        /// </summary>
+        /// <param name="entity">entity</param>
+        /// <returns>return true or false</returns>
+        public bool Delete(T entity)
+        {
+            string sql = GetDeleteSql(entity);
+            MySqlParameter[] parameters = GetMySqlParameters(GetKey().ToArray(), entity);
+            int row = context.Database.ExecuteSqlRaw(sql, parameters);
+            return row > 0 ? true : false;
+        }
+
+
         #endregion
 
         #region private method
@@ -138,6 +152,26 @@ namespace Learn.Repository.Base
             stringBuilder.Remove(stringBuilder.Length - 4, 4);
             return string.Format("UPDATE {0} SET {1}", tableName, stringBuilder);
         }
+
+        /// <summary>
+        /// get update sql
+        /// </summary>
+        /// <param name="entity">entity</param>
+        /// <returns>return update sql</returns>
+        private string GetDeleteSql(T entity)
+        {
+            string tableName = GetCurrentTableName();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendFormat("DELETE FROM {0} WHERE ", tableName);
+            List<PropertyInfo> propertyKeys = GetKey();
+            foreach (var propertyKey in propertyKeys)
+            {
+                stringBuilder.AppendFormat("{0}=@{0} AND ", propertyKey.Name);
+            }
+            stringBuilder.Remove(stringBuilder.Length - 4, 4);
+            return stringBuilder.ToString();
+        }
+
         #endregion
 
         #region private fields

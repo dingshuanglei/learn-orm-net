@@ -27,5 +27,7 @@ namespace Learn.IRepository
         bool Add(Learn_Student learnStudent);
 
         bool Update(Learn_Student learnStudent);
+
+        bool Delete(Learn_Student learnStudent);
     }
 }

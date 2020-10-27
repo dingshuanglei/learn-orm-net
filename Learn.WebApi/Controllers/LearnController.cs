@@ -29,12 +29,31 @@ namespace Learn.WebApi.Controllers
             return ajaxResult;
         }
 
+        /// <summary>
+        /// update
+        /// </summary>
+        /// <param name="learnStudent">learn_student model</param>
+        /// <returns>return true or false</returns>
         [HttpPost]
         [Route(nameof(Update))]
         public AjaxResult Update(Learn_Student learnStudent)
         {
             AjaxResult ajaxResult = new AjaxResult();
             ajaxResult.Result = service.Update(learnStudent);
+            return ajaxResult;
+        }
+
+        /// <summary>
+        /// delete
+        /// </summary>
+        /// <param name="learnStudent">learn_student model</param>
+        /// <returns>return true or false</returns>
+        [HttpPost]
+        [Route(nameof(Delete))]
+        public AjaxResult Delete(Learn_Student learnStudent)
+        {
+            AjaxResult ajaxResult = new AjaxResult();
+            ajaxResult.Result = service.Delete(learnStudent);
             return ajaxResult;
         }
     }
