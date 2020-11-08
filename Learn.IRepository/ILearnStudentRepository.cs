@@ -16,6 +16,7 @@
 *└─────────────────────────────────┘
 */
 using Learn.Model.Data;
+using System.Collections.Generic;
 
 namespace Learn.IRepository
 {
@@ -29,5 +30,7 @@ namespace Learn.IRepository
         bool Update(Learn_Student learnStudent);
 
         bool Delete(Learn_Student learnStudent);
+
+        Learn_Student Get(long id);
     }
 }

@@ -22,6 +22,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -31,7 +32,7 @@ namespace Learn.Repository.Base
     /// <summary>
     /// BaseRepository
     /// </summary>
-    public partial class BaseRepository<T> where T : BaseEntity
+    public partial class BaseRepository<T> where T : BaseEntity,new()
     {
         BaseDbContext context;
         public BaseRepository(BaseDbContext _context)
@@ -79,6 +80,18 @@ namespace Learn.Repository.Base
             return row > 0 ? true : false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public T Get(long id)
+        {
+            string sql = string.Format("{0} WHERE {1}={2} LIMIT 1", GetQuerySql(), nameof(id), id);
+            return SqlQuery(sql);
+            //string sql = string.Format("{0} WHERE {1}=@{1}", GetQuerySql(), id);
+            //return SqlQuery(sql, new[] { new MySqlParameter(string.Format("@{0}",id), id) });
+        }
 
         #endregion
 
@@ -171,6 +184,19 @@ namespace Learn.Repository.Base
             stringBuilder.Remove(stringBuilder.Length - 4, 4);
             return stringBuilder.ToString();
         }
+
+        private string GetQuerySql()
+        {
+            string tableName = GetCurrentTableName();
+            PropertyInfo[] propertyInfos = typeof(T).GetProperties();
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var item in propertyInfos)
+            {
+                stringBuilder.AppendFormat("{0},", item.Name);
+            }
+            return string.Format("SELECT {0} FROM {1} ", stringBuilder.Remove(stringBuilder.Length - 1, 1), tableName);
+        }
+
 
         #endregion
 
@@ -297,6 +323,48 @@ namespace Learn.Repository.Base
             }
             return list.ToArray();
         }
+        #endregion
+
+
+        #region private sql query
+
+
+        private T SqlQuery(string sql)
+        {
+            DbHelperSql dbHelperSql = new DbHelperSql();
+            var dataTable = dbHelperSql.ExecuteDataTable(sql);
+            return DataTableToT(dataTable);
+        }
+
+        private T SqlQuery(string sql, params MySqlParameter[] parameters)
+        {
+            DbHelperSql dbHelperSql = new DbHelperSql();
+            var dataTable = dbHelperSql.ExecuteDataTable(sql, parameters);
+            return DataTableToT(dataTable);
+        }
+
+        private T DataTableToT(DataTable dataTable)
+        {
+            var propertyInfos = typeof(T).GetProperties();
+            foreach (DataRow row in dataTable.Rows)
+            {
+                T t = new T();
+                foreach (PropertyInfo p in propertyInfos)
+                {
+                    if (p.PropertyType.Name == nameof(Boolean))
+                    {
+                        p.SetValue(t, Convert.ToBoolean(row[p.Name]));
+                    }
+                    else
+                    {
+                        p.SetValue(t, row[p.Name] is DBNull ? null : row[p.Name]);
+                    }
+                }
+                return t;
+            }
+            return default(T);
+        }
+
         #endregion
 
         #endregion

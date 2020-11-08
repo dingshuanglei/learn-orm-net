@@ -56,5 +56,20 @@ namespace Learn.WebApi.Controllers
             ajaxResult.Result = service.Delete(learnStudent);
             return ajaxResult;
         }
+
+        /// <summary>
+        /// get
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route(nameof(Get))]
+        public AjaxResult Get(long id)
+        {
+            AjaxResult ajaxResult = new AjaxResult();
+            ajaxResult.Data = service.Get(id);
+            ajaxResult.Result = true;
+            return ajaxResult;
+        }
     }
 }

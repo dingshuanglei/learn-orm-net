@@ -42,7 +42,7 @@ namespace Learn.Model.Data
         /// <summary>
         /// Gender
         /// </summary>
-        public char? Gender { get; set; }
+        public string Gender { get; set; }
 
     }
 }

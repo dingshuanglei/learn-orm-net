@@ -54,5 +54,14 @@ namespace Learn.Repository
                 return baseRepository.Delete(learnStudent);
             }
         }
+
+        public Learn_Student Get(long id)
+        {
+            using (MySqlDbContext mySqlDbContext=new MySqlDbContext())
+            {
+                BaseRepository<Learn_Student> baseRepository = new BaseRepository<Learn_Student>(mySqlDbContext);
+                return baseRepository.Get(id);
+            }
+        }
     }
 }

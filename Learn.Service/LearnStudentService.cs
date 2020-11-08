@@ -18,6 +18,8 @@
 using Learn.IRepository;
 using Learn.IService;
 using Learn.Model.Data;
+using System;
+using System.Collections.Generic;
 
 namespace Learn.Service
 {
@@ -53,11 +55,21 @@ namespace Learn.Service
 
         public bool Delete(Learn_Student learnStudent)
         {
-            if (learnStudent==null)
+            if (learnStudent == null)
             {
                 return false;
             }
             return repository.Delete(learnStudent);
         }
+
+        public Learn_Student Get(long id)
+        {
+            if (id <= 0)
+            {
+                return null;
+            }
+            return repository.Get(id);
+        }
+
     }
 }
