@@ -29,6 +29,11 @@ namespace Learn.Repository.DbContexts
     {
         public string connectionString { get; set; } = "Database=learndb;Server=localhost;Port=3306;UserId=learn_user;Password=learn_user;";
 
+        /// <summary>
+        /// query sql return datatable
+        /// </summary>
+        /// <param name="sql">sql</param>
+        /// <returns></returns>
         public DataTable ExecuteDataTable(string sql)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))

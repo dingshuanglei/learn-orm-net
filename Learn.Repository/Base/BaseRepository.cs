@@ -81,10 +81,10 @@ namespace Learn.Repository.Base
         }
 
         /// <summary>
-        /// 
+        /// get entity
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">id</param>
+        /// <returns>return entity</returns>
         public T Get(long id)
         {
             string sql = string.Format("{0} WHERE {1}={2} LIMIT 1", GetQuerySql(), nameof(id), id);
@@ -185,6 +185,10 @@ namespace Learn.Repository.Base
             return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// get query sql
+        /// </summary>
+        /// <returns></returns>
         private string GetQuerySql()
         {
             string tableName = GetCurrentTableName();
@@ -343,6 +347,11 @@ namespace Learn.Repository.Base
             return DataTableToT(dataTable);
         }
 
+        /// <summary>
+        /// datatable to t
+        /// </summary>
+        /// <param name="dataTable">dataTable</param>
+        /// <returns>return t</returns>
         private T DataTableToT(DataTable dataTable)
         {
             var propertyInfos = typeof(T).GetProperties();
@@ -351,6 +360,7 @@ namespace Learn.Repository.Base
                 T t = new T();
                 foreach (PropertyInfo p in propertyInfos)
                 {
+                    //类型需要做转换bool char
                     if (p.PropertyType.Name == nameof(Boolean))
                     {
                         p.SetValue(t, Convert.ToBoolean(row[p.Name]));
