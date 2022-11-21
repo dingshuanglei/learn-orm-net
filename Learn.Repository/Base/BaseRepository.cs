@@ -34,7 +34,7 @@ namespace Learn.Repository.Base
     /// </summary>
     public partial class BaseRepository<T> where T : BaseEntity,new()
     {
-        BaseDbContext context;
+        readonly BaseDbContext context;
         public BaseRepository(BaseDbContext _context)
         {
             context = _context;
@@ -61,7 +61,7 @@ namespace Learn.Repository.Base
         /// <returns>return true or false</returns>
         public bool Update(T entity)
         {
-            string sql = GetUpdateSql(entity);
+            string sql = GetUpdateSql();
             MySqlParameter[] parameters = GetMySqlParameters(entity.GetType().GetProperties(), entity);
             int row = context.Database.ExecuteSqlRaw(sql, parameters);
             return row > 0 ? true : false;
@@ -74,10 +74,10 @@ namespace Learn.Repository.Base
         /// <returns>return true or false</returns>
         public bool Delete(T entity)
         {
-            string sql = GetDeleteSql(entity);
+            string sql = GetDeleteSql();
             MySqlParameter[] parameters = GetMySqlParameters(GetKey().ToArray(), entity);
             int row = context.Database.ExecuteSqlRaw(sql, parameters);
-            return row > 0 ? true : false;
+            return row > 0;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Learn.Repository.Base
         /// <returns>return entity</returns>
         public T Get(long id)
         {
-            string sql = string.Format("{0} WHERE {1}={2} LIMIT 1", GetQuerySql(), nameof(id), id);
+            string sql = string.Format("{0} where {1}={2} limit 1", GetQuerySql(), nameof(id), id);
             return SqlQuery(sql);
             //string sql = string.Format("{0} WHERE {1}=@{1}", GetQuerySql(), id);
             //return SqlQuery(sql, new[] { new MySqlParameter(string.Format("@{0}",id), id) });
@@ -114,7 +114,7 @@ namespace Learn.Repository.Base
             {
                 throw new ArgumentNullException("get table-name is null");
             }
-            return currentTableName;
+            return currentTableName.ToLower();
         }
         #endregion
 
@@ -127,8 +127,8 @@ namespace Learn.Repository.Base
         private string GetInsertSql(T entity)
         {
             string tableName = GetCurrentTableName();
-            StringBuilder sbField = new StringBuilder();
-            StringBuilder sbValue = new StringBuilder();
+            StringBuilder sbField = new ();
+            StringBuilder sbValue = new ();
             List<PropertyInfo> properties = GetExcludeKeyAllFields();
             foreach (var item in properties)
             {
@@ -138,32 +138,31 @@ namespace Learn.Repository.Base
             sbField.Remove(sbField.Length - 1, 1);
             sbValue.Remove(sbValue.Length - 1, 1);
             //todo ;SELECT @@identity return identity
-            return string.Format("INSERT INTO {0} ({1}) VALUES ({2})", tableName, sbField, sbValue);
+            return string.Format("insert into {0} ({1}) values ({2})", tableName, sbField, sbValue);
         }
 
         /// <summary>
         /// get update sql
         /// </summary>
-        /// <param name="entity"></param>
         /// <returns></returns>
-        private string GetUpdateSql(T entity)
+        private string GetUpdateSql()
         {
             string tableName = GetCurrentTableName();
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new ();
             List<PropertyInfo> properties = GetExcludeKeyAllFields();
             foreach (var item in properties)
             {
                 stringBuilder.AppendFormat("{0}=@{0},", item.Name);
             }
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            stringBuilder.Append(" WHERE ");
+            stringBuilder.Append(" where ");
             List<PropertyInfo> propertyKeys = GetKey();
             foreach (var propertyKey in propertyKeys)
             {
-                stringBuilder.AppendFormat("{0}=@{0} AND ", propertyKey.Name);
+                stringBuilder.AppendFormat("{0}=@{0} and ", propertyKey.Name);
             }
             stringBuilder.Remove(stringBuilder.Length - 4, 4);
-            return string.Format("UPDATE {0} SET {1}", tableName, stringBuilder);
+            return string.Format("update {0} set {1}", tableName, stringBuilder);
         }
 
         /// <summary>
@@ -171,15 +170,15 @@ namespace Learn.Repository.Base
         /// </summary>
         /// <param name="entity">entity</param>
         /// <returns>return update sql</returns>
-        private string GetDeleteSql(T entity)
+        private string GetDeleteSql()
         {
             string tableName = GetCurrentTableName();
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("DELETE FROM {0} WHERE ", tableName);
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendFormat("delete from {0} where ", tableName);
             List<PropertyInfo> propertyKeys = GetKey();
             foreach (var propertyKey in propertyKeys)
             {
-                stringBuilder.AppendFormat("{0}=@{0} AND ", propertyKey.Name);
+                stringBuilder.AppendFormat("{0}=@{0} and ", propertyKey.Name);
             }
             stringBuilder.Remove(stringBuilder.Length - 4, 4);
             return stringBuilder.ToString();
@@ -193,12 +192,12 @@ namespace Learn.Repository.Base
         {
             string tableName = GetCurrentTableName();
             PropertyInfo[] propertyInfos = typeof(T).GetProperties();
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             foreach (var item in propertyInfos)
             {
                 stringBuilder.AppendFormat("{0},", item.Name);
             }
-            return string.Format("SELECT {0} FROM {1} ", stringBuilder.Remove(stringBuilder.Length - 1, 1), tableName);
+            return string.Format("select {0} from {1} ", stringBuilder.Remove(stringBuilder.Length - 1, 1), tableName);
         }
 
 
@@ -218,7 +217,7 @@ namespace Learn.Repository.Base
             {
                 throw new ArgumentNullException("value fields is null");
             }
-            List<PropertyInfo> list = new List<PropertyInfo>();
+            List<PropertyInfo> list = new();
             foreach (var item in properties)
             {
                 if (item.CustomAttributes.Any(c => c.AttributeType.Name == nameof(KeyAttribute)))
@@ -240,7 +239,7 @@ namespace Learn.Repository.Base
         /// <returns>return key-attribute</returns>
         private List<PropertyInfo> GetKey()
         {
-            List<PropertyInfo> list = new List<PropertyInfo>();
+            List<PropertyInfo> list = new();
             PropertyInfo[] properties = typeof(T).GetProperties();
             foreach (var item in properties)
             {
@@ -263,7 +262,7 @@ namespace Learn.Repository.Base
             var val = property.GetValue(entity);
             if (val == null)
             {
-                return "NULL";
+                return "null";
             }
             else
             {
@@ -288,7 +287,7 @@ namespace Learn.Repository.Base
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private int GetBoolValue(object obj)
+        private static int GetBoolValue(object obj)
         {
             //return obj.ToString().ToLower() == "false" ? 0 : 1;
             if (obj.ToString().ToLower() == "false")
@@ -306,9 +305,9 @@ namespace Learn.Repository.Base
         /// <param name="properties">properties</param>
         /// <param name="entity">entity</param>
         /// <returns>return sql parameters</returns>
-        private MySqlParameter[] GetMySqlParameters(PropertyInfo[] properties, T entity)
+        private static MySqlParameter[] GetMySqlParameters(PropertyInfo[] properties, T entity)
         {
-            List<MySqlParameter> list = new List<MySqlParameter>();
+            List<MySqlParameter> list = new();
             foreach (var propertie in properties)
             {
                 object obj = propertie.GetValue(entity);
@@ -335,14 +334,14 @@ namespace Learn.Repository.Base
 
         private T SqlQuery(string sql)
         {
-            DbHelperSql dbHelperSql = new DbHelperSql();
+            DbHelperSql dbHelperSql = new();
             var dataTable = dbHelperSql.ExecuteDataTable(sql);
             return DataTableToT(dataTable);
         }
 
         private T SqlQuery(string sql, params MySqlParameter[] parameters)
         {
-            DbHelperSql dbHelperSql = new DbHelperSql();
+            DbHelperSql dbHelperSql = new();
             var dataTable = dbHelperSql.ExecuteDataTable(sql, parameters);
             return DataTableToT(dataTable);
         }
@@ -357,7 +356,7 @@ namespace Learn.Repository.Base
             var propertyInfos = typeof(T).GetProperties();
             foreach (DataRow row in dataTable.Rows)
             {
-                T t = new T();
+                T t = new();
                 foreach (PropertyInfo p in propertyInfos)
                 {
                     //类型需要做转换bool char
@@ -372,7 +371,7 @@ namespace Learn.Repository.Base
                 }
                 return t;
             }
-            return default(T);
+            return default;
         }
 
         #endregion

@@ -27,7 +27,7 @@ namespace Learn.Repository.DbContexts
     /// </summary>
     public partial class DbHelperSql
     {
-        public string connectionString { get; set; } = "Database=learndb;Server=localhost;Port=3306;UserId=learn_user;Password=learn_user;";
+        public string connectionString { get; set; } = "Database=learndb;Server=192.168.254.132;Port=3306;UserId=learn_user;Password=learn_user;";
 
         /// <summary>
         /// query sql return datatable
